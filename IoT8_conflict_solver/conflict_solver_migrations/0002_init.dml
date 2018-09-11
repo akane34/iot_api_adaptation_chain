@@ -1,0 +1,73 @@
+/**
+*   ApiElement Data
+*/
+INSERT INTO ApiElementType (
+    ApiElementTypeID,
+    ApiElementTypeName,
+    ApiElementTypeDescription
+) VALUES
+(1, 'property-type', 'Type of property in a schema object definition'),
+(2, 'property-name', 'Name of property in a schema object definition');
+
+
+/**
+*   DifferentialType Data
+*/
+INSERT INTO DifferentialType (
+    DifferentialTypeID,
+    DifferentialTypeDescription
+) VALUES 
+(1, 'ADD'),
+(2, 'DELETE'),
+(3, 'MODIFY');
+
+
+/**
+*   DifferentialTiming Data
+INSERT INTO DifferentialTiming (
+    DifferentialTimingID,
+    DifferentialTimingName,
+    DifferentialTypeDescription
+) VALUES
+(1, 'REQUEST', 'Defines that the differential was found in the API request'),
+(2, 'RESPONSE', 'Defines that the differential was found in the API response');
+
+
+/**
+*   AdaptationNode Data
+*/
+INSERT INTO AdaptationNode ( 
+    AdaptationNodeID,
+    TaxonomyID,
+    AdaptationNodeName,
+    AdaptationNodeDescription,
+    AdaptationNodeVerb,
+    AdaptationNodePath,
+    AdaptationNodeRequest,
+    AdaptationNodeResponse
+) VALUES
+(1, 1, 'Caster', 'Casts input value to the specified type', 'POST',
+'{{AdapterChain}}/caster', '{''value'':''<param1>'', ''to-type'':''<param2>''}',
+'{''type'':''<resp1>'', ''value'':''<resp2>''}');
+
+
+/**
+*   Taxonomy Data
+*/
+INSERT INTO Taxonomy ( 
+    TaxonomyID,
+    Description,
+    DifferentialTypeID,
+    DifferentialTimingID,
+    ApiElementTypeID,
+    AdaptationNodeID
+) VALUES 
+(1, 'Modify propert type in schema', 3, 1, 1, 1),
+(2, 'Modify propert type in schema', 3, 2, 1, 1),
+(3, 'Add new a new property to schema', 1, 1, 0, 0),
+(4, 'Add new a new property to schema', 1, 2, 0, 0),
+(5, 'Delete a property from schema', 2, 1, 0, 0),
+(6, 'Delete a property from schema', 2, 2, 0, 0),
+(7, 'Modify a property in schema', 3, 1, 0, 0),
+(8, 'Modify a property in schema', 3, 2, 0, 0);
+
