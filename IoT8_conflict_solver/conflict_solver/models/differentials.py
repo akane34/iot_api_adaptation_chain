@@ -1,6 +1,6 @@
 import re
 from enum import Enum
-
+from models.model import Differential as DifferentialModel
 
 """
 Describes a batch of differences between two APIs
@@ -24,6 +24,29 @@ class ApiDifferential():
     def addElementDifferential(self, diff):
         self.element_differentials.append(diff)
 
+    def fromJson(self, itemJson):
+        apiDifferential = ApiDifferential()
+        apiDifferential.api_name = itemJson['api_name']
+        apiDifferential.api_server = itemJson['api_server']
+        apiDifferential.api_old_version = itemJson['api_old_version']
+        apiDifferential.api_new_version = itemJson['api_new_version']
+
+        elementDifferentials = []
+        for element in itemJson['element_differentials']:
+            x = ElementDifferential()
+            x.differential_type = element['differential_type']
+            x.new_element = element['new_element']
+            x.old_element = element['old_element']
+
+            paths = []
+            for path in element['element_path']:
+                paths.append(path)
+            x.element_path = paths
+
+            elementDifferentials.append(x)
+        apiDifferential.element_differentials = elementDifferentials
+
+        return apiDifferential;
 
 """
 Describes a single atomic difference between two APIs at the element level
@@ -84,7 +107,7 @@ class Differential():
                 element_differential.element_path)
         element_path = element_path[:len(element_path)-1]
 
-        return Differential(
+        return DifferentialModel(
                     ApiName=api_differential.api_name,
                     ApiServer=api_differential.api_server,
                     ApiOldVersion=api_differential.api_old_version,

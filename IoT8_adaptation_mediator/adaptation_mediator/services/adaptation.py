@@ -1,14 +1,14 @@
 import os, json
 import requests 
-
 from models.adaptation import Adaptation
+import settings
 
+settings.init()
 
 def getAdaptations(apiname, apiresource):
-    conflictSolverUrl = os.getenv(key='CONFLICT_SOLVER_URL')
     response = requests.put(
             '{}/adaptation'.format(
-                    conflictSolverUrl),
+                    settings.CONFLICT_SOLVER_URL),
                     json={'ApiName': apiname,
                     'ApiResource': apiresource},
             )
@@ -33,8 +33,6 @@ def splitApiNameApiResource(url):
 
 
 def runAdaptations(verb, url, adaptations, request=None):
-    
-    adaptationChainUrl = os.getenv(key='ADAPTATION_CHAIN_URL')
     requestAdaptations = []
     responseAdaptations = []
 

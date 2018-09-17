@@ -1,7 +1,7 @@
 from models.model import DifferentialAdaptation
 
 ADAPT_DIFFERENTIALS_QUERY = "\
-        INSERT INTO DifferentialAdaptation(\
+        INSERT INTO differential_adaptation(\
                 DifferentialID,\
                 AdaptationNodeID,\
                 ApiServer,\
@@ -38,9 +38,9 @@ ADAPT_DIFFERENTIALS_QUERY = "\
             ON D.DifferentialTypeID = T.DifferentialTypeID\
             AND D.DifferentialTimingID = T.DifferentialTimingID\
             AND D.ApiElementTypeID = T.ApiElementTypeID\
-        INNER JOIN AdaptationNode AN\
+        INNER JOIN adaptation_node AN\
             ON T.AdaptationNodeID = AN.AdaptationNodeID\
-        LEFT JOIN DifferentialAdaptation DA\
+        LEFT JOIN differential_adaptation DA\
             ON D.DifferentialID = DA.DifferentialID\
         WHERE DA.DifferentialID IS NULL;"
 
@@ -50,4 +50,4 @@ Attempts to solve api differentials by searching for compatible nodes
 described in the taxonomy table
 """
 def adaptDifferentials():
-    DifferentialAdaptation.executeInsert(ADAPT_DIFFERENTIALS_QUERY)
+    DifferentialAdaptation().executeInsert(ADAPT_DIFFERENTIALS_QUERY)

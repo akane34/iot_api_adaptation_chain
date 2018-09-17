@@ -1,9 +1,5 @@
-from flask import request, make_response
+from flask import make_response
 from flask_restful import Resource
-
-
-import requests
-
 from services import adaptation
 
 class Routing(Resource):

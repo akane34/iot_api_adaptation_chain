@@ -1,14 +1,13 @@
 import os
 from server import Server
 from server import app
-from resources.differentials import DifferentialResource
-from resources.taxonomyresource import TaxonomyResource
-from resources.adaptation_node import AdaptationNodeResource
-from resources.differential_adaptation import DifferentialAdaptationResource
-from resources.api_element_type import ApiElementTypeResource
+from controllers.differentials import DifferentialController
+from controllers.taxonomy import TaxonomyController
+from controllers.adaptation_node import AdaptationNodeController
+from controllers.differential_adaptation import DifferentialAdaptationController
+from controllers.api_element_type import ApiElementTypeController
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///conflict_solver.db'
-#app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 def main():
     print('*************************************')
@@ -16,18 +15,20 @@ def main():
     print('*************************************')
 
     print('Reading settings...')
-    port = int(os.getenv(key='CONFLICT_SOLVER_PORT') or "5000")
+    port = 5000
+    if os.getenv("CONFLICT_SOLVER_PORT") is not None:
+        port = int(os.getenv("CONFLICT_SOLVER_PORT"))
 
     print('Initiating server')
     server = Server(port=port)
 
-    print('Loading resources')
-    server.addResources([
-            (DifferentialResource, '/differential'),
-            (TaxonomyResource, '/taxonomy'),
-            (AdaptationNodeResource, '/adaptation'),
-            (DifferentialAdaptationResource, '/differential_adaptation'),
-            (ApiElementTypeResource, '/api_element_type')
+    print('Loading controllers')
+    server.addControllers([
+            (DifferentialController, '/differential'),
+            (TaxonomyController, '/taxonomy'),
+            (AdaptationNodeController, '/adaptation'),
+            (DifferentialAdaptationController, '/differential_adaptation'),
+            (ApiElementTypeController, '/api_element_type')
         ])
 
     print('Starting server')

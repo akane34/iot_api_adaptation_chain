@@ -1,13 +1,9 @@
 import sys, os, json
-
-import json as kjson
-
+import settings
 from httpinterface import get, post
 from services.comparer import processApis 
 
-
-CONFLICT_SOLVER_URL = os.getenv('CONFLICT_SOLVER_URL')
-
+settings.init()
 
 def main():
     args = sys.argv
@@ -18,30 +14,34 @@ def main():
         return 2
 
     if len(args) > 3:
-        postContent = bool(args[3])
+        postContent = boolParse(args[3])
 
     path_api1 = args[1]
     path_api2 = args[2]
 
     differential = processApis(path_api1, path_api2)
 
-    payload = [diff for diff in differential.element_differentials]
+    differentialAsJson = json.loads(differential.toJSON())
+    payload = differentialAsJson['element_differentials']
 
     if not postContent:
-        print(kjson.toJSON(differential))
+        print(differential.toJSON())
         return 0
 
-    #conflict_uri = '{}/conflict'.format(CONFLICT_SOLVER_URL)
-    #print('-Delivering data to server {}\n{}\n'.format(conflict_uri, payload))
+    if postContent:
+        conflict_uri = '{}/differential'.format(settings.CONFLICT_SOLVER_URL)
+        print('-Delivering data to server {}\n{}\n'.format(conflict_uri, differentialAsJson))
 
-    #response = post(
-    #        '{}/conflict'.format(CONFLICT_SOLVER_URL),
-    #        data=json.dumps(payload),
-    #        json=None,
-    #    )
+        response = post(
+            conflict_uri,
+            data=None,
+            json=differentialAsJson,
+        )
+        print('-Received \n{}\n'.format(response.json))
 
-    #print('-Received \n{}\n'.format(response.json))
 
+def boolParse(v):
+    return v.lower() in ("yes", "true", "t", "1", "y")
 
 if __name__ == '__main__':
     main()

@@ -1,9 +1,6 @@
 import os
-
-
 from server import Server
-from resources.routing import Routing
-
+from controllers.routing import Routing
 
 def main():
     print('*************************************')
@@ -11,16 +8,15 @@ def main():
     print('*************************************')
     
     print('Reading settings...')
-    #port = int(os.getenv(key='ADAPTATION_MEDIATOR_PORT' or 4900))
     port = 4900
-    conflictSolverUrl = str(os.getenv(key='CONFLICT_SOLVER_URL'))
-    adaptationChainUrl = str(os.getenv(key='ADAPTATION_CHAIN_URL'))
+    if os.getenv("ADAPTATION_MEDIATOR_PORT") is not None:
+        port = int(os.getenv("ADAPTATION_MEDIATOR_PORT"))
 
     print('Initiating server...')
     server = Server(port=port)
 
-    print('Loading resources...')
-    server.addResources([
+    print('Loading controllers...')
+    server.addControllers([
         (Routing, '/<path:url>')
             ])
 

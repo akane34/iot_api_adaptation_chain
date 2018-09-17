@@ -2,13 +2,13 @@ from flask import make_response
 from flask_restful import Resource
 
 import json
-from models.model import AdaptationNode
+from models.model import Taxonomy
 
-class AdaptationNodeResource(Resource):
+class TaxonomyController(Resource):
 
     def get(self):
-        nodes = AdaptationNode().findAll()
-        resp = make_response(json.dumps(nodes))
+        taxonomies = Taxonomy().findAll()
+        resp = make_response(json.dumps(taxonomies))
         resp.headers['content-type'] = 'application/json'
         return resp
 

@@ -4,7 +4,7 @@ from flask_restful import Resource
 from models.model import DifferentialAdaptation
 import json
 
-class DifferentialAdaptationResource(Resource):
+class DifferentialAdaptationController(Resource):
 
     def get(self):
         das = DifferentialAdaptation().findAll()

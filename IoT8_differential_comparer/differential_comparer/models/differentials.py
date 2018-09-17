@@ -1,3 +1,4 @@
+import json
 from enum import Enum
 
 
@@ -23,6 +24,10 @@ class ApiDifferential():
     def addElementDifferential(self, diff):
         self.element_differentials.append(diff)
 
+    def toJSON(self):
+        return json.dumps(self, default=lambda o: o.__dict__,
+                          sort_keys=True, indent=4)
+
 
 """
 Describes a single atomic difference between two APIs at the element level
@@ -40,6 +45,9 @@ class ElementDifferential():
         self.old_element = old_element
         self.new_element = new_element
 
+    def toJSON(self):
+        return json.dumps(self, default=lambda o: o.__dict__,
+                          sort_keys=True, indent=4)
 
 """
 Defines the values allowed for element differential types

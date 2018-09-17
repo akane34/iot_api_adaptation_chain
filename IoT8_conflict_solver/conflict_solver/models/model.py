@@ -1,3 +1,4 @@
+import sqlite3
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy import text
@@ -5,6 +6,16 @@ from server import app
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+
+def dict_factory(cursor, row):
+    d = {}
+    for idx, col in enumerate(cursor.description):
+        d[col[0]] = row[idx]
+    return d
+
+connection = sqlite3.connect('../conflict_solver.db')
+connection.row_factory = dict_factory
+dbcursor = connection.cursor()
 
 class ApiElementType(db.Model):
     ApiElementTypeID = db.Column(db.Integer, primary_key=True)
@@ -16,7 +27,8 @@ class ApiElementType(db.Model):
         db.session.commit()
 
     def findAll(self):
-        return self.query.all()
+        dbcursor.execute('SELECT * FROM ApiElement')
+        return dbcursor.fetchall()
 
 class DifferentialType(db.Model):
     DifferentialTypeID = db.Column(db.Integer, primary_key=True)
@@ -27,7 +39,8 @@ class DifferentialType(db.Model):
         db.session.commit()
 
     def findAll(self):
-        return self.query.all()
+        dbcursor.execute('SELECT * FROM DifferentialType')
+        return dbcursor.fetchall()
 
 class DifferentialTiming(db.Model):
     DifferentialTimingID = db.Column(db.Integer, primary_key=True)
@@ -39,7 +52,8 @@ class DifferentialTiming(db.Model):
         db.session.commit()
 
     def findAll(self):
-        return self.query.all()
+        dbcursor.execute('SELECT * FROM DifferentialTiming')
+        return dbcursor.fetchall()
 
 class Differential(db.Model):
     DifferentialID = db.Column(db.Integer, primary_key=True)
@@ -55,12 +69,14 @@ class Differential(db.Model):
     ApiResource = db.Column(db.String(500))
     ApiElementTypeID = db.Column(db.Integer, db.ForeignKey('api_element_type.ApiElementTypeID'), nullable=False)
 
-    def save(self, Differential):
-        db.session.add(Differential)
-        db.session.commit()
+    def save(self, differentials):
+        for diff in differentials:
+            db.session.add(diff)
+            db.session.commit()
 
     def findAll(self):
-        return self.query.all()
+        dbcursor.execute('SELECT * FROM Differential')
+        return dbcursor.fetchall()
 
 class Taxonomy(db.Model):
     TaxonomyID = db.Column(db.Integer, primary_key=True)
@@ -75,16 +91,8 @@ class Taxonomy(db.Model):
         db.session.commit()
 
     def findAll(self):
-        resultproxy = db.engine.execute(text("select * from taxonomy"))
-        d, a = {}, []
-        for rowproxy in resultproxy:
-            # rowproxy.items() returns an array like [(key0, value0), (key1, value1)]
-            for tup in rowproxy.items():
-                # build up the dictionary
-                d = {**d, **{tup[0]: tup[1]}}
-            a.append(d)
-
-        return self.query.all()
+        dbcursor.execute('SELECT * FROM Taxonomy')
+        return dbcursor.fetchall()
 
 class AdaptationNode(db.Model):
     AdaptationNodeID = db.Column(db.Integer, primary_key=True)
@@ -100,8 +108,9 @@ class AdaptationNode(db.Model):
         db.session.add(AdaptationNode)
         db.session.commit()
 
-    def FindAll(self):
-        return self.query.all()
+    def findAll(self):
+        dbcursor.execute('SELECT * FROM AdaptationNode')
+        return dbcursor.fetchall()
 
 class DifferentialAdaptation(db.Model):
     DifferentialAdaptationID = db.Column(db.Integer, primary_key=True)
@@ -126,9 +135,12 @@ class DifferentialAdaptation(db.Model):
         db.session.commit()
 
     def findAll(self):
-        return self.query.all()
+        dbcursor.execute('SELECT * FROM DifferentialAdaptation')
+        return dbcursor.fetchall()
 
     def executeInsert(self, sqlString):
         sql = text(sqlString)
-        result = db.engine.execute(sql).execution_options(autocommit=True)
+        #result = db.engine.execute(sql).execution_options(autocommit=True)
+        result = db.engine.execute(sql)
+
         return result

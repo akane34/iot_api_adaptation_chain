@@ -5,7 +5,7 @@ from treecompare import diff
 
 from models.differentials import DifferentialType, ApiDifferential, ElementDifferential
 
-EXP = `'(.*?)'`
+EXP = '(.*?)'
 EXP_PATTERN = re.compile(EXP)
 
 
@@ -24,7 +24,6 @@ def processApis(path_api1, path_api2):
     japi1 = loadJSONApi(path_api1)
     japi2 = loadJSONApi(path_api2)
 
-
     diffs = compareJSONApis(japi1, japi2)
     if not len(diffs) > 0:
         return None
@@ -33,7 +32,7 @@ def processApis(path_api1, path_api2):
                 api_name=japi1['info']['title'],
                 api_server=japi1['servers'][0]['url'],
                 api_old_version=japi1['info']['version'],
-                api_new_version=japi1['info']['version']
+                api_new_version=japi2['info']['version']
             )
 
     for diff in diffs: 
@@ -55,7 +54,6 @@ def processApis(path_api1, path_api2):
 
     return api_differential
 
-
 def parsePath(path):
     route = []
 
@@ -65,10 +63,9 @@ def parsePath(path):
             continue
 
         nodestr = node[search.start()+1:search.end()-1]
-        route.append(nodestr)
+        route.append(_adjustValueFormat(nodestr))
 
     return route
-
 
 def parseMessage(msg):
     if msg[:8].upper() == 'EXPECTED':
@@ -77,7 +74,6 @@ def parseMessage(msg):
     else:
         diff_type = 'UNEXPECTED'
         return _parseMessageUnexpected(msg)
-
 
 def _parseMessageExpected(msg):
     gotIndex = msg.rfind(', got ')
@@ -119,5 +115,6 @@ def _adjustValueFormat(value):
     value = value.replace('True', 'true')
     value = value.replace('False', 'false')
     value = value.replace('"', '')
+    value = value.replace('\'', '')
 
     return value

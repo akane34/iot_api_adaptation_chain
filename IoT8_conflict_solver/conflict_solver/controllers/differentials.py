@@ -8,9 +8,9 @@ from models.differentials import ApiDifferential, ElementDifferential,\
 from services.api_element import apiElementTypeFromElementPath,\
         apiResourceFromElementPath, differentialTimingFromElementPath
 from services.differential_adaptation import adaptDifferentials
+from utils import tools
 
-
-class DifferentialResource(Resource):
+class DifferentialController(Resource):
 
     def get(self):
         diffs = Differential().findAll()
@@ -20,10 +20,13 @@ class DifferentialResource(Resource):
 
     def post(self):
         itemJSON = request.get_json(force=True)
-        itemObj = json.fromJSON(ApiDifferential, itemJSON) 
+        print (itemJSON)
+        #itemObj = tools.fromJSON(ApiDifferential, itemJSON)
+        itemObj = ApiDifferential().fromJson(itemJSON)
         diffs = []
         for diff in itemObj.element_differentials:
-            element_differential = json.fromJSON(ElementDifferential, diff)
+            #element_differential = json.fromJSON(ElementDifferential, diff)
+            element_differential = diff
             diffRep = DiffRep.fromDifferentials(itemObj,
                     element_differential)
             diffRep.DifferentialTimingID = \
@@ -35,7 +38,7 @@ class DifferentialResource(Resource):
 
             diffs.append(diffRep)
 
-        query = Differential.save(diffs)
+        query = Differential().save(diffs)
         adaptDifferentials()
         return
 
